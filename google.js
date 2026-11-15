@@ -485,7 +485,7 @@ window.Api = (function () {
     const TX_ID = bold(['Tanggal', 'Kategori', 'Nominal', 'Keterangan', 'Sumber Dana / Metode Bayar', 'ID']);
     const TX_EN = bold(['Date', 'Category', 'Amount', 'Notes', 'Fund Source / Payment Method']);
     const body = {
-      properties: { title: title || 'Catatan Keuangan Money Tracker', locale: 'id_ID', timeZone: tz },
+      properties: { title: title || 'Catatan Keuangan Money Tracker', locale: 'in_ID', timeZone: tz },
       sheets: [
         sheet(N.income, [TX_ID], { freeze: 1 }), sheet(N.expense, [TX_ID], { freeze: 1 }),
         sheet(N.assets, assetRows('id'), { rows: 60 }),
@@ -494,7 +494,16 @@ window.Api = (function () {
         sheet(N.options, DROPDOWN, { rows: 60 })
       ]
     };
-    const res = await req(SHEETS_API, { method: 'POST', body: body });
+    // Kode bahasa Indonesia di Google Sheets adalah "in_ID" (kode lama Java).
+    // Kalau ditolak, buat tanpa setelan bahasa (format Rp tetap dipasang manual).
+    let res;
+    try {
+      res = await req(SHEETS_API, { method: 'POST', body: body });
+    } catch (e) {
+      if (!/locale/i.test(e.message || '')) throw e;
+      delete body.properties.locale;
+      res = await req(SHEETS_API, { method: 'POST', body: body });
+    }
     sheetId = res.spreadsheetId;
     LS.set('mt.sheetId', sheetId);
     const ids = {};
