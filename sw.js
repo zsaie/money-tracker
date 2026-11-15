@@ -1,6 +1,6 @@
 /* Service worker: membuat aplikasi cepat dibuka & tetap tampil saat offline.
    Kalau kamu mengubah file aplikasi, naikkan angka VERSION agar HP mengambil versi baru. */
-const VERSION = 'mt-v2.0.0';
+const VERSION = 'mt-v2.0.1';
 const SHELL = [
   './',
   'index.html',
